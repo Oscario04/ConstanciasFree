@@ -43,3 +43,13 @@ build/
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
