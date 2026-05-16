@@ -13,7 +13,7 @@ function formatDate(value?: string) {
 }
 
 export function HomePage() {
-  const { data, isLoading } = useQuery({ queryKey: ['events', 'home'], queryFn: () => eventsApi.list({ status: 'published', limit: 6 }) });
+  const { data, isLoading, error } = useQuery({ queryKey: ['events', 'home'], queryFn: () => eventsApi.list({ status: 'published', limit: 6 }) });
   return (
     <div className="grid gap-8">
       <section className="rounded border border-outline-soft bg-white p-8 shadow-paper">
@@ -27,7 +27,7 @@ export function HomePage() {
       </section>
       <section>
         <PageHeader title="Eventos disponibles" />
-        {isLoading ? <LoadingState /> : <EventGrid events={data?.events ?? []} />}
+        {isLoading ? <LoadingState /> : error ? <Alert tone="error">No se pudieron cargar los eventos publicados: {error.message}</Alert> : <EventGrid events={data?.events ?? []} />}
       </section>
     </div>
   );
@@ -150,4 +150,3 @@ export function VerifyResultPage() {
     </Card>
   );
 }
-
