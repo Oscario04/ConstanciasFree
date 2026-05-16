@@ -35,12 +35,21 @@ Allowed statuses: `todo`, `in_progress`, `blocked`, `done`.
 
 ### BL-010 - Frontend command verification
 
-- status: blocked
+- status: done
 - source: Plan SDD Fullstack Con Rama Separada
 - scope: `frontend/`
 - acceptance: `npm run typecheck`, `npm run test`, `npm run build` and `npm run e2e` run successfully.
-- verification: Requires Node/npm installed in the local environment.
-- notes: Current shell reports `node` and `npm` are not recognized.
+- verification: Portable Node was used; `npm run typecheck`, `npm run test`, and `npm run build` passed.
+- notes: Native shell still lacks global Node/npm, but the project validates with portable Node.
+
+### BL-011 - Demo seed data
+
+- status: done
+- source: user request for demo data
+- scope: `scripts/seed_demo.py`, MongoDB demo records
+- acceptance: Seed creates representative users, events, requests, attendance and documents for each role.
+- verification: Run `python scripts/seed_demo.py --reset-demo` and inspect public/user/admin/staff screens.
+- notes: All demo records use `demo_seed: true`; password is `Demo1234!`.
 
 ### BL-009 - Fullstack traceability documentation
 
