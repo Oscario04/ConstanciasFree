@@ -136,7 +136,7 @@ check("GET /api/users/ (lista, solo admin)",
 
 check("PATCH /api/users/{id}/status",
     requests.patch(f"{BASE_URL}/api/users/{user_id}/status",
-        headers=admin_headers, json={"status": "active"}))
+        headers=admin_headers, params={"status": "active"}))
 
 
 # ══════════════════════════════════════════════════
@@ -148,9 +148,10 @@ r_event = check("POST /api/events/ (crear)",
     requests.post(f"{BASE_URL}/api/events/", headers=admin_headers, json={
         "title":       "Congreso de Prueba",
         "description": "Evento generado por test_api.py",
+        "event_type":  "conference",
         "start_date":  "2025-09-01T09:00:00",
         "end_date":    "2025-09-01T18:00:00",
-        "location":    "Auditorio Principal",
+        "venue":       "Auditorio Principal",
         "capacity":    100
     }),
     expected_status=201
@@ -206,7 +207,7 @@ if request_id:
     check(f"PATCH /api/requests/{request_id}/review (aprobar)",
         requests.patch(f"{BASE_URL}/api/requests/{request_id}/review",
             headers=admin_headers,
-            json={"status": "approved", "notes": "Aprobado en prueba automática"}
+            json={"status": "approved", "admin_message": "Aprobado en prueba automatica"}
         )
     )
 
@@ -219,8 +220,10 @@ header("5. Asistencia")
 attendance_id = None
 if event_id:
     r_checkin = check("POST /api/attendance/check-in",
-        requests.post(f"{BASE_URL}/api/attendance/check-in", headers=user_headers, json={
-            "event_id": event_id
+        requests.post(f"{BASE_URL}/api/attendance/check-in", headers=admin_headers, json={
+            "event_id": event_id,
+            "user_id": user_id,
+            "method": "manual"
         }),
         expected_status=201
     )
@@ -248,16 +251,15 @@ header("6. Documentos")
 doc_code = None
 if event_id:
     r_doc = check("POST /api/documents/issue (emitir documento)",
-        requests.post(f"{BASE_URL}/api/documents/issue", headers=admin_headers, json={
-            "event_id":    event_id,
-            "user_id":     user_id,
-            "type":        "constancia",
-            "description": "Constancia de participación"
+        requests.post(f"{BASE_URL}/api/documents/issue", headers=admin_headers, params={
+            "event_id": event_id,
+            "user_id": user_id,
+            "doc_type": "constancia"
         }),
         expected_status=201
     )
     if r_doc.status_code == 201:
-        doc_code = r_doc.json().get("code")
+        doc_code = r_doc.json().get("verification_code")
         doc_id   = r_doc.json().get("id")
         print(f"   → code: {doc_code}")
 
@@ -279,7 +281,7 @@ if event_id:
     check(f"POST /api/documents/issue-batch/{event_id}",
         requests.post(f"{BASE_URL}/api/documents/issue-batch/{event_id}",
             headers=admin_headers),
-        expected_status=200
+        expected_status=201
     )
 
 
