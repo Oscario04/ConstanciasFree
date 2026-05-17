@@ -69,11 +69,13 @@ Staff:
 ## Layout Rules
 
 - La app autenticada debe abrir en una herramienta usable, no en landing decorativa.
-- Navegacion lateral en desktop y barra inferior o menu compacto en mobile.
-- Header con busqueda/contexto, usuario actual y salida.
+- Navegacion lateral en desktop con control para contraer/expandir; en mobile debe existir navegacion compacta sin bloquear contenido.
+- Header con busqueda/contexto y menu de perfil con avatar o inicial del usuario, acceso a perfil y salida.
 - Tablas y formularios deben ser densos, escaneables y con acciones claras.
 - No usar textos largos explicando la app dentro de la UI; usar etiquetas concretas.
 - Componentes con ancho maximo para lectura, pero pantallas operativas de tablas usan todo el viewport.
+- El nombre visible del producto debe ser amigable e institucional; evitar nombres internos del prompt como marca principal.
+- Los accesos entre areas (`/app`, `/admin`, `/staff`) deben mostrarse como cambio de contexto, no duplicar la navegacion activa de cada area.
 
 ## Component System Rules
 
@@ -124,6 +126,7 @@ Staff:
 - 401: limpiar sesion y enviar a `/login`.
 - 403: mostrar pantalla sin permiso.
 - Empty: mensaje corto con accion primaria cuando aplique.
+- No renderizar objetos JSON crudos en pantallas finales; mapear respuestas administrativas a metricas, listas o pares etiqueta/valor legibles.
 
 ## Test-First Plan
 

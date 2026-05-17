@@ -43,6 +43,7 @@ Eventos:
 - Usuario lista eventos con `GET /api/events/`.
 - Detalle usa `GET /api/events/{event_id}`.
 - La UI debe señalar si el evento no acepta solicitudes por estado.
+- La UI debe mostrar capacidad y progreso de registro cuando `capacity` sea mayor que cero, usando azul para baja ocupacion, amarillo desde ocupacion media y rojo cuando el cupo este cerca de llenarse.
 
 Solicitudes:
 - Usuario solicita con `POST /api/requests/`.

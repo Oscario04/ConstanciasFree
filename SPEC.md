@@ -45,6 +45,7 @@ Out of scope unless explicitly requested:
 - `users.role` is the implemented authorization role mechanism.
 - EARS-style acceptance criteria are preferred for requirements that need testing.
 - `BACKLOG.md` is the canonical parseable task list for agents.
+- The friendly frontend product name is `Constancias Claras`; backend/API naming can remain ConstanciasFree where already implemented.
 
 ## Tasks
 
@@ -64,4 +65,3 @@ A change is complete when:
 - `test_api.py` or a focused test is updated when the API contract changes.
 - New backlog items include owner, status, source, and verification notes.
 - No new secrets, virtualenv files, cache files, or generated artifacts are introduced.
-

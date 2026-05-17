@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { documentsApi, eventsApi, requestsApi } from '../lib/api/modules';
 import { useAuth } from '../lib/auth/AuthContext';
-import { Alert, Badge, Button, Card, EmptyState, Field, LoadingState, PageHeader, SecondaryButton, Textarea } from '../components/ui';
+import { Alert, Badge, Button, CapacityBar, Card, EmptyState, Field, LoadingState, PageHeader, SecondaryButton, Textarea } from '../components/ui';
 import type { Event } from '../types/domain';
 
 function formatDate(value?: string) {
@@ -14,12 +14,13 @@ function formatDate(value?: string) {
 
 export function HomePage() {
   const { data, isLoading, error } = useQuery({ queryKey: ['events', 'home'], queryFn: () => eventsApi.list({ status: 'published', limit: 6 }) });
+
   return (
     <div className="grid gap-8">
       <section className="rounded border border-outline-soft bg-white p-8 shadow-paper">
-        <p className="text-sm font-semibold text-success">Gestion VisDeDat · Constancias verificables</p>
-        <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-ink">Gestion de eventos, solicitudes y documentos verificables.</h1>
-        <p className="mt-4 max-w-2xl text-muted">Consulta eventos publicados, solicita participacion y verifica constancias por codigo publico.</p>
+        <p className="text-sm font-semibold text-success">Constancias verificables</p>
+        <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight text-ink">Eventos, solicitudes y documentos en un espacio claro.</h1>
+        <p className="mt-4 max-w-2xl text-muted">Consulta eventos publicados, solicita participacion y valida constancias con codigo publico.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link to="/eventos"><Button>Ver eventos</Button></Link>
           <Link to="/verificar"><SecondaryButton>Verificar documento</SecondaryButton></Link>
@@ -35,10 +36,11 @@ export function HomePage() {
 
 function EventGrid({ events }: { events: Event[] }) {
   if (!events.length) return <EmptyState title="No hay eventos publicados por ahora." />;
+
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {events.map((event) => (
-        <Card key={event.id} className="grid gap-3">
+        <Card key={event.id} className="grid gap-4">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-lg font-bold text-ink">{event.title}</h2>
             <Badge status={event.status}>{event.status}</Badge>
@@ -48,6 +50,7 @@ function EventGrid({ events }: { events: Event[] }) {
             <div><dt className="inline font-semibold text-ink">Inicio: </dt><dd className="inline">{formatDate(event.start_date)}</dd></div>
             <div><dt className="inline font-semibold text-ink">Sede: </dt><dd className="inline">{event.venue ?? 'Por confirmar'}</dd></div>
           </dl>
+          <CapacityBar registered={event.registered ?? 0} capacity={event.capacity} />
           <Link to={`/eventos/${event.id}`}><Button className="w-full">Ver detalle</Button></Link>
         </Card>
       ))}
@@ -57,6 +60,7 @@ function EventGrid({ events }: { events: Event[] }) {
 
 export function EventsPage() {
   const { data, isLoading, error } = useQuery({ queryKey: ['events'], queryFn: () => eventsApi.list({ limit: 50 }) });
+
   return (
     <>
       <PageHeader title="Catalogo de eventos" description="Eventos publicados, activos y archivados segun el estado real del backend." />
@@ -69,20 +73,23 @@ export function EventDetailPage() {
   const { eventId = '' } = useParams();
   const { user } = useAuth();
   const { data: event, isLoading } = useQuery({ queryKey: ['event', eventId], queryFn: () => eventsApi.get(eventId), enabled: Boolean(eventId) });
+
   if (isLoading) return <LoadingState />;
   if (!event) return <EmptyState title="Evento no encontrado." />;
+
   const canRequest = event.status === 'published' || event.status === 'ongoing';
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <Card>
         <PageHeader title={event.title} description={event.description} />
-        <div className="grid gap-3 text-sm text-muted md:grid-cols-2">
+        <div className="grid gap-4 text-sm text-muted md:grid-cols-2">
           <p><strong className="text-ink">Tipo:</strong> {event.event_type}</p>
           <p><strong className="text-ink">Estado:</strong> <Badge status={event.status}>{event.status}</Badge></p>
           <p><strong className="text-ink">Inicio:</strong> {formatDate(event.start_date)}</p>
           <p><strong className="text-ink">Fin:</strong> {formatDate(event.end_date)}</p>
           <p><strong className="text-ink">Sede:</strong> {event.venue ?? 'Por confirmar'}</p>
-          <p><strong className="text-ink">Cupo:</strong> {event.registered ?? 0}/{event.capacity || 'sin limite'}</p>
+          <div className="md:col-span-2"><CapacityBar registered={event.registered ?? 0} capacity={event.capacity} /></div>
         </div>
       </Card>
       <Card>
@@ -102,6 +109,7 @@ export function RequestEventPage() {
     mutationFn: () => requestsApi.create({ event_id: eventId, requested_role: 'participante', message }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['my-requests'] }),
   });
+
   return (
     <Card className="max-w-2xl">
       <PageHeader title="Solicitud de participacion" description="La solicitud quedara pendiente hasta revision administrativa." />
@@ -118,10 +126,12 @@ export function RequestEventPage() {
 export function VerifyPage() {
   const navigate = useNavigate();
   const [code, setCode] = useState('');
+
   function submit(event: FormEvent) {
     event.preventDefault();
     if (code.trim()) navigate(`/verificar/${encodeURIComponent(code.trim())}`);
   }
+
   return (
     <Card className="mx-auto max-w-xl">
       <PageHeader title="Verificador publico" description="Introduce el codigo de una constancia para validar su autenticidad." />
@@ -136,8 +146,10 @@ export function VerifyPage() {
 export function VerifyResultPage() {
   const { code = '' } = useParams();
   const { data, isLoading, error } = useQuery({ queryKey: ['verify', code], queryFn: () => documentsApi.verify(code), retry: false });
+
   if (isLoading) return <LoadingState label="Verificando documento" />;
   if (error) return <Alert tone="error">Documento no encontrado o no valido para uso publico.</Alert>;
+
   return (
     <Card className="mx-auto max-w-2xl">
       <PageHeader title="Documento verificado" description="El codigo corresponde a un documento activo." actions={<Badge status="verified">Verificado</Badge>} />

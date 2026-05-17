@@ -83,6 +83,14 @@ export interface AttendanceRecord {
 }
 
 export interface DashboardStats {
+  total_events?: number;
+  total_users?: number;
+  total_documents?: number;
+  total_requests?: number;
+  pending_requests?: number;
+  approved_requests?: number;
+  documents_by_type?: Record<string, number>;
+  events_by_status?: Record<string, number>;
   [key: string]: unknown;
 }
 
@@ -95,4 +103,3 @@ export interface LoginResponse {
   token_type: string;
   user: User;
 }
-

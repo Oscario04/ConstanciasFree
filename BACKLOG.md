@@ -31,7 +31,7 @@ Allowed statuses: `todo`, `in_progress`, `blocked`, `done`.
 - scope: `frontend/`
 - acceptance: React/Vite app implements public, user, admin and staff routes against the real API client.
 - verification: `npm run typecheck`, `npm run test`, `npm run build`, Playwright smoke.
-- notes: Frontend scaffold and MVP screens added; local Node/npm is missing, so frontend command verification is pending on a machine with Node installed.
+- notes: Frontend scaffold and MVP screens added; 2026-05-16 polish pass completed for headers, authenticated app UX, collapsible sidebar, auth screens, admin JSON replacement, CSV links, and event capacity indicators.
 
 ### BL-010 - Frontend command verification
 

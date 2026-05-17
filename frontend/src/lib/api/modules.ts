@@ -14,7 +14,7 @@ import type {
   UserStatus,
   VerificationResult,
 } from '../../types/domain';
-import { apiRequest, pdfUrl, storeLoginSession } from './client';
+import { apiRequest, csvUrl, pdfUrl, storeLoginSession } from './client';
 
 export const authApi = {
   async login(username: string, password: string) {
@@ -88,12 +88,11 @@ export const documentsApi = {
 export const statsApi = {
   dashboard: () => apiRequest<DashboardStats>('/api/stats/dashboard'),
   eventStats: (eventId: string) => apiRequest<DashboardStats>(`/api/stats/event/${eventId}`),
-  attendanceCsvPath: (eventId: string) => `/api/stats/event/${eventId}/export/attendance`,
-  documentsCsvPath: (eventId: string) => `/api/stats/event/${eventId}/export/documents`,
+  attendanceCsvPath: (eventId: string) => csvUrl(`/api/stats/event/${eventId}/export/attendance`),
+  documentsCsvPath: (eventId: string) => csvUrl(`/api/stats/event/${eventId}/export/documents`),
 };
 
 export const adminApi = {
   getConfig: () => apiRequest<Record<string, unknown>>('/api/admin/config'),
   updateConfig: (data: Record<string, unknown>) => apiRequest<ApiMessage>('/api/admin/config', { method: 'PATCH', body: JSON.stringify(data) }),
 };
-

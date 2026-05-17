@@ -34,6 +34,7 @@ Rutas fase futura:
 Dashboard:
 - Consume `GET /api/stats/dashboard`.
 - Muestra totales, solicitudes pendientes, documentos por tipo y eventos por estado.
+- Debe presentar las metricas como tarjetas, listas o barras legibles, no como JSON crudo.
 
 Eventos:
 - Lista `GET /api/events/`.
@@ -65,6 +66,7 @@ Usuarios:
 Configuracion:
 - `GET /api/admin/config`.
 - `PATCH /api/admin/config`, actualmente sin persistencia garantizada.
+- Debe mostrar modulos y valores actuales en campos legibles, no como JSON crudo.
 
 ## Functional Requirements EARS
 
